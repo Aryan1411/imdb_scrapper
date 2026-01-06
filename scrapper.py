@@ -1,4 +1,5 @@
 import pandas as pd
+from jinja2 import Template
 import requests
 from bs4 import BeautifulSoup
 
@@ -32,3 +33,40 @@ df=pd.DataFrame({
     'Rating':rating
 })
 df.to_csv('imdb_top_movies.csv', index=False)
+
+html="""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>This is top 25 movies list to watch</h1>
+    <table border="1">
+        <tr>
+            <th>Rank</th>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Rating</th>
+        </tr>
+        {% for j in range(25) %}
+        <tr>
+            <td>{{j+1}}</td>
+            <td>{{df['Title'][j]}}</td>
+            <td>{{df['Year'][j]}}</td>
+            <td>{{df['Rating'][j]}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+        
+    
+</body>
+</html>
+"""
+temp=Template(html)
+html=temp.render(df=df)
+
+with open('index.html','w',encoding='utf-8') as f:
+    f.write(html)
