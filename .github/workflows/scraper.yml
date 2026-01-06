@@ -45,17 +45,3 @@ jobs:
           git commit -m "Update IMDb data and site" || echo "No changes to commit"
           git push
 
-      # 6️⃣ Setup GitHub Pages
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      # 7️⃣ Upload site files
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      # 8️⃣ Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
