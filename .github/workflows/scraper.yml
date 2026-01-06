@@ -1,0 +1,61 @@
+name: Weekly IMDb Scraper + Pages
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"   # Every Sunday at 00:00 UTC
+
+jobs:
+  scrape-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas requests beautifulsoup4 jinja2
+
+      # 4️⃣ Run scraper
+      - name: Run scraper
+        run: |
+          python scrapper.py
+
+      # 5️⃣ Commit generated files
+      - name: Commit CSV and HTML
+        run: |
+          git config user.name "Aryan1411"
+          git config user.email "22f3001834@ds.study.iitm.study.ac.in"
+          git add imdb_top_movies.csv index.html
+          git commit -m "Update IMDb data and site" || echo "No changes to commit"
+          git push
+
+      # 6️⃣ Setup GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 7️⃣ Upload site files
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      # 8️⃣ Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
