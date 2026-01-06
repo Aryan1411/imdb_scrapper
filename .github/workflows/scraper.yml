@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0"   # Runs every Sunday at 00:00 UTC
+    - cron: "0 0 * * 0"   # Every Sunday at 00:00 UTC
 
 jobs:
   scrape:
@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas requests beautifulsoup4
+          pip install pandas requests beautifulsoup4 jinja2
 
       - name: Run scraper
         run: |
@@ -32,16 +32,14 @@ jobs:
 
       - name: Verify generated files
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files:"
+          echo "Files generated:"
           ls -lah
 
-      - name: Commit and push CSV
+      - name: Commit and push CSV + HTML
         run: |
           git config user.name "Aryan1411"
           git config user.email "22f3001834@ds.study.iitm.study.ac.in"
           git status
-          git add imdb_top_movies.csv
-          git commit -m "Update IMDb Top Movies CSV" || echo "No changes to commit"
+          git add imdb_top_movies.csv index.html
+          git commit -m "Update IMDb CSV and HTML page" || echo "No changes to commit"
           git push
