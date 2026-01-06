@@ -1,19 +1,17 @@
-name: Weekly Scraper Job
+name: Weekly IMDb Scraper
 
 on:
-  schedule:
-    # Runs every Sunday at 00:00 UTC
-    - cron: "0 0 * * 0"
-
-  workflow_dispatch:   # allows manual run
+  workflow_dispatch:
 
 jobs:
-  run-scraper:
+  scrape:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -22,9 +20,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install pandas requests beautifulsoup4
 
       - name: Run scraper
         run: |
           python scrapper.py
+
+      - name: Commit and push CSV
+        run: |
+          git config user.name "Aryan1411"
+          git config user.email "22f3001834@ds.study.iitm.ac.in"
+          git add imdb_top_movies.csv
+          git commit -m "Update IMDb Top Movies CSV" || echo "No changes to commit"
+          git push
